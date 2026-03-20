@@ -3,41 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barra oculta</title>
+    <title>Unedol</title>
     <link rel="stylesheet" href="styles/estilo_index.css">
 </head>
 <body>
     <header class="encabezado">
-        <!-- Escudo de la institución  -->
-        <div class="logo">
-            <img id="logoPrincipal"/>
-        </div>
 
-        <!-- Barra de navegación -->
-        <div class="navegacion">
-            <nav class="menu-navegacion">
-                <li class="lis"><a href="#inicio">Inicio</a></li>
-                <li class="lis"><a href="#Galeria">Galeria</a></li>
-                <li class="lis"><a href="#Historia">Historia</a></li>
-                <li class="lis"><a href="#contacto">Contacto</a></li>
-            </nav>
-        </div>
+        <section class="encabezado01">
+            <div class="logo">
 
-        <!-- Contenido adicional o espacio para otros elementos como un GIF -->
-        <!-- Contenedor del video -->
-        <div class="cont_video">
-            <video 
-                id="video"
-                src="img/index/Video_boy.mp4"
-                autoplay
-                loop
-                muted
-                playsinline>
-            </video>
-        </div>
+                <div class="logo-izq">
+                    <img id="logoSecundario" src="img/index/logoUnedol02.webp">
+                </div>
+
+                <div class="logo-der">
+                     <a href="https://www.facebook.com/share/1EBxdZD4iz/" target="_blank">
+                        <img id="ico_redesSociales" src="img/index/iconos/facebook-svgrepo-com.svg">
+                    </a>
+                    <a href="https://www.instagram.com/unidadeducativaolmedo?igsh=cjR2NHZiMzU4dDlo" target="_blank">
+                        <img id="ico_redesSociales" src="img/index/iconos/instagram-svgrepo-com.svg">
+                    </a>
+                    <a href="https://www.tiktok.com/@unidad.educativaolmedo?_r=1&_t=ZS-94qEpph66wG" target="_blank">
+                        <img id="ico_redesSociales" src="img/index/iconos/tik-tok-svgrepo-com.svg">
+                    </a>
+                    <img id="logoPrincipal" src="img/index/logoUnedol.webp">
+                </div>
+            </div>
+        </section>
+        <section class="encabezado02">
+            <!-- Barra de navegación -->
+            <div class="navegacion">
+                <nav class="menu-navegacion">
+                    <li class="lis"><a href="#inicio">Inicio</a></li>
+                    <li class="lis"><a href="#Galeria">Galeria</a></li>
+                    <li class="lis"><a href="#Historia">Historia</a></li>
+                    <li class="lis"><a href="#contacto">Contacto</a></li>
+                </nav>
+            </div>
+            <!-- Contenido adicional o espacio para otros elementos como un GIF -->
+            <!-- Contenedor del video -->
+            <div class="cont_video">
+                <video 
+                    id="video"
+                    src="img/index/Video_boy.mp4"
+                    autoplay
+                    loop
+                    muted
+                    playsinline>
+                </video>
+            </div>
+        </section>
     </header>
 
-    <!-- Contenido principal de la página -->
+    <!-- Contenido principal de la página (Presentación) -->
     <main class="main">
         <section class="scene">
 
@@ -77,6 +95,30 @@
 
         </section>
         <script src="scripts/script_index.js"></script>
+    </main>
+
+    <!-- Contenido adicional o sección de pie de página (información) -->
+    <main>
+        <!-- Acerca de nostros -->
+        <section class="nosotros">
+            <div class="img_nosotros">
+                <img src="img/index/nosotros1.webp" class="slide">
+                <img src="img/index/nosotros2.webp" class="slide">
+                <img src="img/index/nosotros3.webp" class="slide">
+            </div>
+            <div class="inf_nosotros">
+                <h1>Acerca de nosotros</h1>
+                <h3>Bienvenidos a la Unidad Educativa Particular "Olmedo"</h3>
+                <p>
+
+                </p>
+            </div>
+        </section>
+        
+        <!-- Descubre porque nos hace diferente -->
+        <section class="video_promocional">
+
+        </section>
     </main>
     
 </body>

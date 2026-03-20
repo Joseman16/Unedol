@@ -15,12 +15,12 @@ body {
 /* Estilos para el encabezado del sitio (Etiqueta header) */
 .encabezado{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
     justify-content: space-between;
     align-items: center;
 
-    padding: 10px 20px;
+    padding: 0px;
 
     width: 100%;            /* IMPORTANTE */
     box-sizing: border-box; /* evita que padding rompa el ancho */
@@ -36,75 +36,98 @@ body {
     background-size: 100% 100%;
 }
 
-.logo {
+.encabezado01{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+}
+
+
+.encabezado02{
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-between;
     align-items: center;
-    margin-right: 5px;
-    margin-left: 15px;
-    animation-name: myAnimationLogo;
-    animation-duration: 12s;
-    animation-iteration-count: infinite;
-    background-color:  transparent;
-    border: none;
+    width: 100%;
+    margin: 15px ;
+
+}
+
+
+.logo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* izquierda */
+.logo-izq{
+    display: flex;
+    align-items: center;
+    margin-left: 25px;
+}
+
+/* derecha */
+.logo-der{
+    display: flex;
+    align-items: center;
+    gap: 10px; /* espacio entre imágenes */
+    margin-right: 20px;
+}
+
+#ico_redesSociales{
+    width: 55px;
+    height: 50px;
+    transition: transform 0.3s ease;
+    margin: 0 10px; /* margen horizontal entre íconos */
 }
 
 #logoPrincipal{
-    height: 70px;
-    width: 75px;
-    display: block;
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url('../img/index/logoUnedol.webp');
-
-    transform-style: preserve-3d;
-    animation: giro3d 30s infinite;
-
-    border: none;
-    background-color: transparent;
-    outline: none;
+    height: 200px;
+    width: 125px;
+    transition: transform 0.3s ease;
 }
 
-
-/* perspectiva para efecto 3D */
-body{
-    perspective: 1000px;
+#logoSecundario{
+    height: 160px;
+    width: 170px;
+    transition: transform 0.3s ease;
 }
 
-
-/* animacion */
-
-@keyframes giro3d{
-
-    0%{
-        transform: rotateY(0deg);
-    }
-
-    /* gira rápido */
-    5%{
-        transform: rotateY(360deg);
-    }
-
-    /* se queda quieto */
-    100%{
-        transform: rotateY(360deg);
-    }
-
+#ico_redesSociales:hover{
+    transform: scale(1.1); /* Aumenta el tamaño al pasar el mouse */
 }
+
+#logoPrincipal:hover{
+    transform: scale(1.05); /* Aumenta el tamaño al pasar el mouse */
+}
+
+#logoSecundario:hover{
+    transform: scale(1.05); /* Aumenta el tamaño al pasar el mouse */
+}
+
+.navegacion{
+    display: flex;
+    flex-direction: row;
+    margin-left: 35%;
+}
+
 
 .menu-navegacion{
     display: flex;
     flex-direction: row;
     gap: 20px;
     list-style: none; /* Quita viñetas */
+    justify-content: flex-end;
 }
 
 .menu-navegacion a{
     text-decoration: none;   /* Quita el subrayado */
-    font-size: 18px;         /* Aumenta el tamaño */
+    font-size: 21px;         /* Aumenta el tamaño */
     color: white;            /* Color opcional */
 }
 
@@ -182,15 +205,37 @@ body{
         gap: 14px;
     }
 
-    #logoPrincipal{
-        height: 50px;
-        width: 55px;
+    .menu-navegacion a{
+        text-decoration: none;   /* Quita el subrayado */
+        font-size: 16px;         /* Aumenta o reduce el tamaño */
+        color: white;            /* Color opcional */
     }
 
-    #logoPrincipal:hover{
-        height: 50px;
-        width: 55px;
+
+    #logoPrincipal{
+        height: 120px;
+        width: 80px;
     }
+
+    #logoSecundario{
+        height: 100px;
+        width: 120px; 
+    }
+
+    #ico_redesSociales{
+        width: 40px;
+        height: 35px;
+    }
+    
+    .logo{
+        display: flex;
+        flex-direction: column;
+        justify-content:center;
+        align-items: center;
+        width: 100%;
+    }
+
+
 
     .lis{
         padding: 5px 8px;  /* ⬅️ AQUÍ se agranda el cuadro */
@@ -393,4 +438,33 @@ body{
     .bg-typography::after {
         font-size: clamp(4rem, 15vw, 12rem);
     }
+}
+
+.nosotros{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: 100px;
+    font-size: 18px;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 5px auto;
+}
+
+.img_nosotros{
+    width: 300px;
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+.slide{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    object-fit: cover;
+    display: none;
 }

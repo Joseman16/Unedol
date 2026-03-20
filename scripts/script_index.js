@@ -50,3 +50,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+/* Carrusel de imagenes */
+
+let index = 0;
+let slides = document.getElementsByClassName("slide");
+
+function mostrarImagen(){
+
+    for(let i = 0; i < slides.length; i++){
+        slides[i].style.display = "none";
+    }
+
+    slides[index].style.display = "block";
+
+    index++;
+
+    if(index >= slides.length){
+        index = 0;
+    }
+
+}
+
+setInterval(mostrarImagen, 10000); // 10 segundos
+
+mostrarImagen();

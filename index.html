@@ -42,22 +42,19 @@
             </div>
             <!-- Contenido adicional o espacio para otros elementos como un GIF -->
             <!-- Contenedor del video -->
-            <div class="cont_video">
-                <video 
-                    id="video"
-                    src="img/index/Video_boy.mp4"
-                    autoplay
-                    loop
-                    muted
-                    playsinline>
-                </video>
+            <div class="cont_gif">
+                <img 
+                    id="gif_unedol"
+                    src="img/index/GifUnedol.gif"
+                    alt="UNEDOL"
+                >
             </div>
         </section>
     </header>
 
     <!-- Contenido principal de la página (Presentación) -->
     <main class="main">
-        <section class="scene">
+        <section class="escena">
 
             <div class="bg-typography">
                 
@@ -94,32 +91,65 @@
             </div>
 
         </section>
-        <script src="scripts/script_index.js"></script>
-    </main>
 
-    <!-- Contenido adicional o sección de pie de página (información) -->
-    <main>
         <!-- Acerca de nostros -->
         <section class="nosotros">
             <div class="img_nosotros">
-                <img src="img/index/nosotros1.webp" class="slide">
-                <img src="img/index/nosotros2.webp" class="slide">
-                <img src="img/index/nosotros3.webp" class="slide">
+                <div class="carrusel-wrapper" id="carrusel">
+                    <img src="img/index/escudos/escudo.webp" class="slide active" alt="Escudo actual">
+                    <img src="img/index/escudos/escudo antiguo.webp" class="slide" alt="Escudo antiguo">
+                    <img src="img/index/logoUnedol.webp" class="slide" alt="Logo UNEDOL">
+                </div>
+                <div class="dots" id="dots"></div>
             </div>
             <div class="inf_nosotros">
                 <h1>Acerca de nosotros</h1>
                 <h3>Bienvenidos a la Unidad Educativa Particular "Olmedo"</h3>
-                <p>
-
-                </p>
+                <div>
+                    <p>La Unidad Educativa UNEDOL – Unidad Educativa Olmedo es una institución 
+                        comprometida con brindar educación de calidad en los niveles de Educación 
+                        Inicial, Educación General Básica y Bachillerato, ofreciendo especialidades 
+                        en Soporte Informático, Contabilidad y Ciencias. Nuestro objetivo es formar 
+                        estudiantes con conocimientos sólidos, valores firmes y preparación para los 
+                        retos académicos y profesionales.</p>
+                    <br>
+                    <p>En UNEDOL combinamos la enseñanza con la cultura, el arte y la formación 
+                        en valores, fomentando el desarrollo integral de nuestros estudiantes 
+                        en un ambiente de respeto, disciplina y excelencia educativa. Trabajamos 
+                        con dedicación para formar ciudadanos responsables, creativos y comprometidos 
+                        con la sociedad.</p>
+                    <br>
+                    <p class="cita">"La educación es el arma más poderosa que puedes usar para cambiar el mundo."
+                    — Nelson Mandela</p>
+                </div>
             </div>
         </section>
-        
         <!-- Descubre porque nos hace diferente -->
         <section class="video_promocional">
+            <div id="bg"></div>
 
+            <div id="video-container">
+                <iframe
+                    id="yt-video"
+                    src="https://www.youtube.com/embed/5WVuPFHnq_g?autoplay=1&mute=1&loop=1&playlist=5WVuPFHnq_g&controls=0&rel=0&modestbranding=1"
+                    frameborder="0"
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen>
+                </iframe>
+                <div id="video-overlay"></div>
+            </div>
+
+            <canvas id="confetti"></canvas>
+
+            <div id="hero-content">
+                <h1>Unidad Educativa<br><span>UNEDOL</span></h1>
+                <p>Formando ciudadanos con valores, conocimiento y excelencia</p>
+                <a href="https://www.unedol.com/" class="btn-hero">Conócenos</a>
+            </div>
         </section>
     </main>
-    
+
+    <script src="scripts/script_index.js"></script>
+
 </body>
 </html>

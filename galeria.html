@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles/estilo_galeria.css">
+    <link rel="stylesheet" href="styles/estilo_index.css">
+</head>
+<body>
+    <header class="encabezado">
+
+        <section class="encabezado01">
+            <div class="logo">
+
+                <div class="logo-izq">
+                    <img id="logoSecundario" src="img/index/logoUnedol02.webp">
+                </div>
+
+                <div class="logo-der">
+                     <a href="https://www.facebook.com/share/1EBxdZD4iz/" target="_blank">
+                        <img id="ico_redesSociales" src="img/index/iconos/facebook-svgrepo-com.svg">
+                    </a>
+                    <a href="https://www.instagram.com/unidadeducativaolmedo?igsh=cjR2NHZiMzU4dDlo" target="_blank">
+                        <img id="ico_redesSociales" src="img/index/iconos/instagram-svgrepo-com.svg">
+                    </a>
+                    <a href="https://www.tiktok.com/@unidad.educativaolmedo?_r=1&_t=ZS-94qEpph66wG" target="_blank">
+                        <img id="ico_redesSociales" src="img/index/iconos/tik-tok-svgrepo-com.svg">
+                    </a>
+                    <img id="logoPrincipal" src="img/index/logoUnedol.webp">
+                </div>
+            </div>
+        </section>
+        <section class="encabezado02">
+            <!-- Barra de navegación -->
+            <div class="navegacion">
+                <nav>
+                    <ul class="menu-navegacion">
+                        <li class="lis"><a href="index.html">Inicio</a></li>
+                        <li class="lis"><a href="galeria.html">Galería</a></li>
+                        <li class="lis"><a href="#historia">Historia</a></li>
+                        <li class="lis"><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- Contenido adicional o espacio para otros elementos como un GIF -->
+            <!-- Contenedor del video -->
+            <div class="cont_gif">
+                <img 
+                    id="gif_unedol"
+                    src="img/index/GifUnedol.gif"
+                    alt="UNEDOL"
+                >
+            </div>
+        </section>
+    </header>
+
+    <section class="galeria3d-section"> 
+        <h2 class="galeria3d-titulo">Nuestra Galería</h2>
+        <div class="galeria3d-linea"></div>
+        <div class="galeria3d-wrap">
+            <canvas id="galeria3d-canvas"></canvas>
+        </div>
+        <p class="galeria3d-hint">Arrastra para orbitar &nbsp;·&nbsp; Scroll para zoom &nbsp;·&nbsp; Clic en imagen para ampliar</p>
+    </section>
+    
+    <!-- ════════════════════════════════════════
+        LIGHTBOX
+    ════════════════════════════════════════ -->
+    <div id="galeria3d-lightbox">
+        <span id="galeria3d-lbclose">&times;</span>
+        <img id="galeria3d-lbimg" src="" alt="">
+    </div>
+
+    <script type="module" src="scripts/script_galeria.js"></script>
+</body>
+</html>

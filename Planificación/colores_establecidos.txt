@@ -26,3 +26,4 @@
 | Dorado         | #D4A017 |        |
 | Gris claro     | #E5E5E5 |        |
 | Blanco         | #FFFFFF |        |
+| Blanco en sec  | #f4f6f9 |        |

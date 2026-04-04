@@ -519,7 +519,7 @@ body {
 /* ====== RESPONSIVE ====== */
 @media screen and (max-width: 950px) {
     .galeria-book-3d {
-        transform: scale(0.85);
+        transform: translateX(var(--spine-shift)) scale(0.85);
     }
 
     .bg-typography {
@@ -532,8 +532,14 @@ body {
 }
 
 @media (max-width: 600px) {
-    .galeria-book-3d {
-        transform: scale(0.6);
+     .galeria-book-3d {
+        width: clamp(120px, 40vw, 180px);
+        height: clamp(180px, 55vw, 260px);
+    }
+
+    .galeria-book-3d__item {
+        width: clamp(200px, 75vw, 280px);
+        height: clamp(260px, 90vw, 360px);
     }
 
     .bg-typography {
@@ -542,6 +548,19 @@ body {
 
     .bg-typography::after {
         font-size: clamp(4rem, 15vw, 12rem);
+    }
+}
+
+@media (max-width: 480px) {
+
+    .galeria-book-3d {
+        width: clamp(100px, 50vw, 150px);
+        height: clamp(150px, 70vw, 220px);
+    }
+
+    .galeria-book-3d__item {
+        width: clamp(180px, 85vw, 240px);
+        height: clamp(240px, 110vw, 320px);
     }
 }
 
@@ -808,6 +827,88 @@ body {
     #hero-content h1 span { font-size: 2.8rem; }
     .btn-hero { padding: 0.65rem 1.6rem; font-size: 0.9rem; }
 }
+
+/* ====== MEJORAS RESPONSIVE VIDEO ====== */
+
+/* Tablets */
+@media (max-width: 900px) {
+    #hero-content {
+        max-width: 90%;
+        padding: 2rem 1rem;
+    }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+
+    .video_promocional {
+        min-height: 80vh; /* evita que sea demasiado alto */
+    }
+
+    #yt-video {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover; /*clave */
+    }
+
+    #hero-content {
+        padding: 1.5rem 1rem;
+    }
+
+    #hero-content p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+}
+
+/* Celulares pequeños */
+@media (max-width: 400px) {
+
+    #yt-video {
+        width: 140vw;
+        height: 78vw;
+    }
+
+    #hero-content h1 {
+        font-size: 1.7rem;
+    }
+
+    #hero-content h1 span {
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+    }
+}
+
+/* MODO HORIZONTAL (CLAVE) */
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .video_promocional {
+        min-height: 100vh;
+    }
+
+    #yt-video {
+        width: 100vw;
+        height: 56.25vw;
+    }
+
+    #hero-content {
+        padding: 1rem;
+    }
+
+    #hero-content h1 {
+        font-size: 1.5rem;
+    }
+
+    #hero-content h1 span {
+        font-size: 2rem;
+    }
+
+    #hero-content p {
+        font-size: 0.85rem;
+        margin: 0.5rem auto 1rem;
+    }
+}
+
 
 /*
 z-index 0 → #bg (imagen NYC)

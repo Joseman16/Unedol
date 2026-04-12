@@ -598,7 +598,7 @@ body {
     position: relative;
     border-radius: 10px;
     overflow: hidden;
-    background-color: #0A2A43; /* fondo para el espacio vacío */
+    background-color: #0a2a43; /* fondo para el espacio vacío */
 }
 
 .slide {

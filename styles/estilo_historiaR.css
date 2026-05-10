@@ -27,10 +27,10 @@ main {
 @layer demo {
 	:root{
 		--gallery-gap:10px;
-		--gallery-text-color: white;
+		--gallery-text-color: rgb(0, 0, 0);
 
 		/* indicator */
-		--gallery-indicator-color: rgb(10, 42, 67);
+		--gallery-indicator-color: #ccb21f;
 		
 		--gallery-indicator-hover-border: 1px solid var(--gallery-indicator-color);
 		--gallery-indicator-hover-bg: oklch(from var(--gallery-indicator-color) l c h / 0.75);
@@ -39,11 +39,11 @@ main {
 
 		--gallery-img-border: 1px solid light-dark(rgb(11 11 11 / .25),rgb(255 255 255 / .5));
 		--gallery-img-scale: .9;
+
 		@supports not (corner-shape: notch) {
 			--gallery-img-scale: .75;
 		}
 	}
-
 	
 	.wrapper {
 		display: grid;
@@ -328,3 +328,136 @@ main {
     }
 }
 
+
+/* =============================================
+   estilo_instagram.css
+   Feed de Instagram — Unidad Educativa Olmedo
+   Paleta: amarillo #ccb21f, fondo claro/oscuro,
+   tipografía Verdana (igual que el sitio)
+   ============================================= */
+
+.instagram-section {
+    width: 100%;
+    max-width: 1100px;
+    margin: 60px auto 80px;
+    padding: 0 24px;
+}
+
+.instagram-title {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 500;
+    color: #1a1a1a;
+    margin: 0 0 1.8rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 3px solid #ccb21f;   /* amarillo del sitio */
+    display: inline-block;
+}
+
+/* ---- Grid de tarjetas ---- */
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ---- Tarjeta ---- */
+.instagram-card {
+    background: light-dark(rgb(255 237 212), rgb(30 30 30));
+    border: 1px solid light-dark(rgba(11,11,11,.18), rgba(255,255,255,.18));
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 300ms ease-in-out, box-shadow 300ms ease-in-out;
+}
+
+.instagram-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(204, 178, 31, 0.25);
+}
+
+.instagram-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.15);
+    transition: filter 300ms ease-in-out;
+}
+
+.instagram-card:hover img {
+    filter: grayscale(0);
+}
+
+.instagram-card-body {
+    padding: 1rem 1.2rem 1.2rem;
+}
+
+.instagram-card-body p {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: light-dark(rgb(50 50 50), rgb(220 220 220));
+    margin: 0 0 0.9rem;
+}
+
+.instagram-card-body a {
+    display: inline-block;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    text-decoration: none;
+    border-bottom: 2px solid #ccb21f;
+    padding-bottom: 2px;
+    transition: color 200ms ease, border-color 200ms ease;
+}
+
+.instagram-card-body a:hover {
+    color: #ccb21f;
+    border-color: transparent;
+}
+
+/* ---- Skeleton loader ---- */
+.instagram-skeleton {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid light-dark(rgba(11,11,11,.12), rgba(255,255,255,.12));
+    animation: sk-pulse 1.5s ease-in-out infinite;
+}
+
+.instagram-skeleton .sk-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: light-dark(#e8e0ce, #2a2a2a);
+}
+
+.instagram-skeleton .sk-body {
+    padding: 1rem 1.2rem 1.2rem;
+    background: light-dark(#f5ede0, #232323);
+}
+
+.instagram-skeleton .sk-line {
+    height: 11px;
+    background: light-dark(#ddd4bf, #333);
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.instagram-skeleton .sk-line.short {
+    width: 38%;
+}
+
+@keyframes sk-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; }
+}
+
+/* ---- Mensaje de error ---- */
+.instagram-error {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 0.85rem;
+    color: light-dark(#666, #aaa);
+    margin-top: 1rem;
+}

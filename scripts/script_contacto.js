@@ -1,126 +1,169 @@
-/* ─────────────────────────────────────────
-   CONFIG
-───────────────────────────────────────── */
-let MAX_MSGS = 15;
-let STORE_KEY = "msg_count_v1";
+console.log("JS cargado correctamente");
 
-/* ─────────────────────────────────────────
-   DOM
-───────────────────────────────────────── */
-const sendBtn = document.getElementById("sendBtn");
-const fieldName = document.getElementById("fieldName");
-const fieldMsg = document.getElementById("fieldMsg");
+// ===============================
+// ELEMENTOS
+// ===============================
+const btnEnviar = document.getElementById("sendBtn");
+const campoNombre = document.getElementById("fieldName");
+const campoMensaje = document.getElementById("fieldMsg");
+
+const notif = document.getElementById("notif");
+const notifTitle = document.getElementById("notifTitle");
+const notifBody = document.getElementById("notifBody");
+
 const statusMsg = document.getElementById("statusMsg");
+
 const dots = document.querySelectorAll(".dot");
 
-/* ─────────────────────────────────────────
-   COUNT STORAGE
-───────────────────────────────────────── */
-function getCount() {
-  return parseInt(localStorage.getItem(STORE_KEY) || "0");
+// ===============================
+// VARIABLES
+// ===============================
+let intentos = 5;
+
+// ===============================
+// RELOJ
+// ===============================
+function actualizarHora() {
+
+    const reloj = document.getElementById("clockTime");
+
+    const ahora = new Date();
+
+    let horas = ahora.getHours();
+    let minutos = ahora.getMinutes();
+
+    minutos = minutos < 10 ? "0" + minutos : minutos;
+
+    reloj.textContent = `${horas}:${minutos}`;
 }
 
-function setCount(n) {
-  localStorage.setItem(STORE_KEY, n);
-}
+setInterval(actualizarHora, 1000);
 
-/* ─────────────────────────────────────────
-   MENSAJE LIMITE
-───────────────────────────────────────── */
-function showLimitMessage() {
-  statusMsg.textContent = "🚫 Has alcanzado el límite de mensajes enviados";
-  statusMsg.className = "status-msg error";
+actualizarHora();
 
-  sendBtn.disabled = true;
-  sendBtn.textContent = "Límite alcanzado";
-}
+// ===============================
+// ACTUALIZAR DOTS
+// ===============================
+function actualizarIntentos() {
 
-/* ─────────────────────────────────────────
-   UI DOTS
-───────────────────────────────────────── */
-function updateDots() {
-  const used = getCount();
+    dots.forEach((dot, index) => {
 
-  dots.forEach((d, i) => d.classList.toggle("used", i < used));
+        if(index < intentos){
+            dot.style.opacity = "1";
+        }else{
+            dot.style.opacity = "0.2";
+        }
 
-  if (used >= MAX_MSGS) {
-    showLimitMessage();
-  }
-}
-
-/* ─────────────────────────────────────────
-   CLICK SEND
-───────────────────────────────────────── */
-sendBtn.addEventListener("click", async () => {
-  const name = fieldName.value.trim();
-  const msg = fieldMsg.value.trim();
-
-  // VALIDACIÓN
-  if (!name || !msg) {
-    statusMsg.textContent = "Completa los campos";
-    statusMsg.className = "status-msg error";
-    return;
-  }
-
-  // LÍMITE
-  if (getCount() >= MAX_MSGS) {
-    showLimitMessage();
-    return;
-  }
-
-  sendBtn.disabled = true;
-  sendBtn.textContent = "Enviando...";
-
-  try {
-    const res = await fetch("http://localhost:3000/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name,
-        msg
-      })
     });
 
-    let data;
+}
+
+// ===============================
+// MOSTRAR NOTIFICACIÓN
+// ===============================
+function mostrarNotificacion(titulo, mensaje){
+
+    notifTitle.textContent = titulo;
+    notifBody.textContent = mensaje;
+
+    notif.classList.add("show");
+
+    setTimeout(() => {
+        notif.classList.remove("show");
+    }, 3000);
+
+}
+
+// ===============================
+// BOTÓN
+// ===============================
+btnEnviar.addEventListener("click", async () => {
+
+    console.log("CLICK DETECTADO");
+
+    const nombre = campoNombre.value.trim();
+    const mensaje = campoMensaje.value.trim();
+
+    if(nombre === "" || mensaje === ""){
+
+        statusMsg.textContent = "Completa los campos";
+
+        mostrarNotificacion(
+            "Error",
+            "Faltan datos"
+        );
+
+        return;
+    }
+
     try {
-      data = await res.json();
-    } catch {
-      data = {};
+
+        console.log("Enviando datos...");
+
+        const respuesta = await fetch("/enviar", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                nombre,
+                mensaje
+            })
+
+        });
+
+        console.log("RESPUESTA:", respuesta);
+
+        const data = await respuesta.json();
+
+        console.log("DATA:", data);
+
+        if(data.ok){
+
+            intentos--;
+
+            actualizarIntentos();
+
+            statusMsg.textContent = "Mensaje enviado";
+
+            mostrarNotificacion(
+                nombre,
+                "Mensaje enviado correctamente"
+            );
+
+            campoNombre.value = "";
+            campoMensaje.value = "";
+
+        }else{
+
+            statusMsg.textContent = data.mensaje;
+
+            mostrarNotificacion(
+                "Error",
+                data.mensaje
+            );
+
+        }
+
+    } catch (error) {
+
+        console.log("ERROR:", error);
+
+        statusMsg.textContent = "Error del servidor";
+
+        mostrarNotificacion(
+            "Servidor",
+            "No se pudo enviar"
+        );
+
     }
 
-    if (!res.ok) {
-      throw new Error(data.error || "Error al enviar");
-    }
-
-    // SUCCESS
-    const newCount = getCount() + 1;
-    setCount(newCount);
-    updateDots();
-
-    statusMsg.textContent = "✅ Mensaje enviado correctamente";
-    statusMsg.className = "status-msg";
-
-    fieldName.value = "";
-    fieldMsg.value = "";
-
-    if (newCount >= MAX_MSGS) {
-      showLimitMessage();
-    } else {
-      sendBtn.disabled = false;
-      sendBtn.textContent = "Enviar mensaje";
-    }
-
-  } catch (err) {
-    console.error(err);
-    statusMsg.textContent = "❌ Error al enviar mensaje";
-    statusMsg.className = "status-msg error";
-
-    sendBtn.disabled = false;
-    sendBtn.textContent = "Enviar mensaje";
-  }
 });
 
-/* INIT */
-updateDots();
+// ===============================
+// INICIO
+// ===============================
+actualizarIntentos();

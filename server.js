@@ -19,16 +19,67 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/admin/reset", (req, res) => {
+    const IP_ADMIN = "192.168.255.3";
+    const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
+
+    if (ip !== IP_ADMIN) {
+        return res.status(403).send("No autorizado");
+    }
+
+    res.send(`
+        <script>
+            localStorage.removeItem("intentos_restantes");
+            document.write("✅ Intentos reseteados. <a href='/'>Volver</a>");
+        </script>
+    `);
+});
+
 // ======================
 // RESEND
 // ======================
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+app.get("/geo", async (req, res) => {
+    try {
+        const ipReal = req.headers["x-forwarded-for"]?.split(",")[0]?.trim()
+                    || req.socket.remoteAddress?.replace("::ffff:", "");
+
+        const esLocal = !ipReal || ipReal === "127.0.0.1" || ipReal === "::1" || ipReal.startsWith("192.168");
+
+        const url = esLocal
+            ? "http://ip-api.com/json/?fields=status,query,lat,lon"
+            : `http://ip-api.com/json/${ipReal}?fields=status,query,lat,lon`;
+
+        const d = await fetch(url).then(r => r.json());
+
+        console.log("ip-api.com respondió:", d);
+
+        if (d.status !== "success") throw new Error("ip-api falló: " + d.message);
+
+        res.json({
+            ip:      d.query,
+            latitud: d.lat,
+            longitud: d.lon
+        });
+
+    } catch (e) {
+        console.error("Error en /geo:", e);
+        res.json({ ip: "no disponible", latitud: null, longitud: null });
+    }
+});
+
+// ----- /enviar -----
 app.post("/enviar", async (req, res) => {
     try {
-        const { nombre, mensaje } = req.body;
-
+        const { nombre, mensaje, ip, latitud, longitud } = req.body;
+ 
+        console.log("DATOS RECIBIDOS:", { ip, latitud, longitud });
+ 
+        const lat = latitud  ?? "no disponible";
+        const lon = longitud ?? "no disponible";
+ 
         const data = await resend.emails.send({
             from: "onboarding@resend.dev",
             to: process.env.TO_EMAIL,
@@ -37,47 +88,23 @@ app.post("/enviar", async (req, res) => {
                 <h2>Nuevo mensaje</h2>
                 <p><strong>Nombre:</strong> ${nombre}</p>
                 <p><strong>Mensaje:</strong> ${mensaje}</p>
+                <hr>
+                <p><strong>IP:</strong> ${ip}</p>
+                <p><strong>Latitud:</strong> ${lat}</p>
+                <p><strong>Longitud:</strong> ${lon}</p>
             `
         });
-
+ 
         console.log(data);
         res.json({ ok: true, data });
-
+ 
     } catch (error) {
         console.error(error);
         res.status(500).json({ ok: false, error: error.message });
     }
 });
 
-// ======================
-// INSTAGRAM (Apify)
-// ======================
 
-const apify = new ApifyClient({
-    token: process.env.APIFY_TOKEN,
-});
-
-app.get("/instagram", async (req, res) => {
-    try {
-        const run = await apify
-            .actor("apify/instagram-scraper")   // actor gratuito
-            .call({
-                directUrls: [`https://www.instagram.com/unidadeducativaolmedo/`],
-                resultsType: "posts",
-                resultsLimit: 6,
-            });
-
-        const { items } = await apify
-            .dataset(run.defaultDatasetId)
-            .listItems();
-
-        res.json(items);
-
-    } catch (error) {
-        console.error("Error obteniendo publicaciones de Instagram:", error);
-        res.status(500).json({ error: "Error obteniendo publicaciones" });
-    }
-});
 
 // ======================
 // PROXY DE IMÁGENES

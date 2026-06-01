@@ -1,167 +1,245 @@
-console.log("JS cargado correctamente");
+// ============================================================
+// scripts/script_contacto.js  — versión FINAL coords completas
+// ============================================================
 
-// ===============================
-// ELEMENTOS
-// ===============================
-const btnEnviar = document.getElementById("sendBtn");
-const campoNombre = document.getElementById("fieldName");
-const campoMensaje = document.getElementById("fieldMsg");
+const MAX_INTENTOS = 5;
+const STORAGE_KEY  = "intentos_restantes";
 
-const notif = document.getElementById("notif");
-const notifTitle = document.getElementById("notifTitle");
-const notifBody = document.getElementById("notifBody");
+const SUPABASE_URL = "https://ahjabjblvjydauzevjor.supabase.co/rest/v1/visitantes";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoamFiamJsdmp5ZGF1emV2am9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMDcwNzMsImV4cCI6MjA3MTY4MzA3M30.GXnuj9pnNdwWKgCsL3n4ftn-t7P32DK1CoyNAzjel9g";
 
-const statusMsg = document.getElementById("statusMsg");
-const dots = document.querySelectorAll(".dot");
+// ── Sanear localStorage ──────────────────────────────────────
+(function() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw === null) return;
+  const n = parseInt(raw, 10);
+  if (isNaN(n) || n < 0 || n > MAX_INTENTOS) localStorage.removeItem(STORAGE_KEY);
+})();
 
-// ===============================
-// LÍMITE DE INTENTOS (persistido)
-// ===============================
-const LIMITE = 5;
-const LS_KEY = "intentos_restantes";
-
+// ── Helpers UI ───────────────────────────────────────────────
 function getIntentos() {
-    const guardado = localStorage.getItem(LS_KEY);
-    if (guardado === null) { localStorage.setItem(LS_KEY, LIMITE); return LIMITE; }
-    return parseInt(guardado);
+  const v = localStorage.getItem(STORAGE_KEY);
+  return v === null ? MAX_INTENTOS : parseInt(v, 10);
+}
+function setIntentos(n) { localStorage.setItem(STORAGE_KEY, Math.max(0, n)); }
+function renderDots(n) {
+  document.querySelectorAll("#dots .dot").forEach((d, i) => d.classList.toggle("used", i >= n));
+}
+function setStatus(msg, color = "#aaa") {
+  const el = document.getElementById("statusMsg");
+  if (el) { el.textContent = msg; el.style.color = color; }
+}
+function showNotif(title, body) {
+  const notif = document.getElementById("notif");
+  const t = document.getElementById("notifTitle");
+  const b = document.getElementById("notifBody");
+  if (!notif) return;
+  if (t) t.textContent = title;
+  if (b) b.textContent = body;
+  notif.classList.add("show");
+  setTimeout(() => notif.classList.remove("show"), 4000);
 }
 
-function reducirIntento() {
-    const nuevo = Math.max(getIntentos() - 1, 0);
-    localStorage.setItem(LS_KEY, nuevo);
-    return nuevo;
+// ── Reloj ────────────────────────────────────────────────────
+function updateClock() {
+  const el = document.getElementById("clockTime");
+  if (el) el.textContent = new Date().toLocaleTimeString("es-EC", { hour:"2-digit", minute:"2-digit" });
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── Formatear coord: número → string con 6 decimales fijos ──
+// Usa toPrecision para no perder dígitos significativos
+// Ejemplo: -1.87253 → "-1.872530"  |  -1.87 → "-1.870000"
+function fmtCoord(val) {
+  if (val === null || val === undefined) return null;
+  const n = typeof val === "string" ? parseFloat(val) : val;
+  if (isNaN(n)) return null;
+  // toFixed(6) sobre el número nativo — confiable cuando el número YA tiene los decimales
+  return n.toFixed(6);
 }
 
-function sinIntentos() { return getIntentos() <= 0; }
-
-// ===============================
-// RELOJ
-// ===============================
-function actualizarHora() {
-    const reloj = document.getElementById("clockTime");
-    const ahora = new Date();
-    let horas = ahora.getHours();
-    let minutos = ahora.getMinutes();
-    minutos = minutos < 10 ? "0" + minutos : minutos;
-    reloj.textContent = `${horas}:${minutos}`;
+// ── GPS del navegador ────────────────────────────────────────
+function pedirGPS() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      console.warn("[GPS] no disponible en este navegador");
+      resolve(null); return;
+    }
+    console.log("[GPS] pidiendo permiso...");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        // Leer directamente del objeto GeolocationCoordinates
+        // accuracy indica cuántos metros de precisión tiene
+        const rawLat = pos.coords.latitude;
+        const rawLon = pos.coords.longitude;
+        const acc    = pos.coords.accuracy;
+        console.log("[GPS] ✅ RAW lat:", rawLat, "| lon:", rawLon, "| precisión:", acc, "m");
+        // Formatear a 6 decimales preservando todos los dígitos del float
+        const latStr = rawLat.toFixed(6);
+        const lonStr = rawLon.toFixed(6);
+        console.log("[GPS] formateado → lat:", latStr, "| lon:", lonStr);
+        resolve({ latitud: latStr, longitud: lonStr, precision: acc });
+      },
+      (err) => {
+        const motivo = ["", "PERMISO DENEGADO", "POSICIÓN NO DISPONIBLE", "TIMEOUT"][err.code] || err.message;
+        console.warn("[GPS] ❌ error:", motivo);
+        resolve(null);
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    );
+  });
 }
-setInterval(actualizarHora, 1000);
-actualizarHora();
 
-// ===============================
-// ACTUALIZAR DOTS
-// ===============================
-function actualizarIntentos() {
-    const intentos = getIntentos();
-    dots.forEach((dot, index) => {
-        dot.style.opacity = index < intentos ? "1" : "0.2";
+// ── ipapi.co desde el navegador ──────────────────────────────
+function pedirIpapi() {
+  return fetch("https://ipapi.co/json/")
+    .then(r => r.json())
+    .then(d => {
+      console.log("[ipapi] lat:", d.latitude, "| lon:", d.longitude);
+      return d;
+    })
+    .catch(e => { console.warn("[ipapi] falló:", e.message); return null; });
+}
+
+// ── Geo principal ────────────────────────────────────────────
+async function obtenerGeo() {
+  const [gps, ipapi] = await Promise.all([pedirGPS(), pedirIpapi()]);
+
+  const ip     = ipapi?.ip           ?? "no disponible";
+  const ciudad = ipapi?.city         ?? "";
+  const region = ipapi?.region       ?? "";
+  const pais   = ipapi?.country_name ?? "";
+
+  if (gps) {
+    // GPS: strings con 6 decimales exactos desde toFixed sobre el float nativo
+    console.log("[geo] FUENTE: GPS →", gps.latitud, gps.longitud);
+    return { ip, ciudad, region, pais,
+             latitud: gps.latitud, longitud: gps.longitud,
+             fuenteGeo: "GPS/navegador" };
+  }
+
+  // Fallback ipapi.co: convertir número a string con 6 decimales
+  const latStr = fmtCoord(ipapi?.latitude);
+  const lonStr = fmtCoord(ipapi?.longitude);
+  console.log("[geo] FUENTE: ipapi.co →", latStr, lonStr);
+  return { ip, ciudad, region, pais,
+           latitud: latStr, longitud: lonStr,
+           fuenteGeo: "IP/ipapi.co" };
+}
+
+// ── Guardar en Supabase ──────────────────────────────────────
+async function guardarSupabase(geo) {
+  try {
+    // Las coords ya son strings con 6 decimales — castear a float para Supabase
+    const payload = {
+      ip:       geo.ip,
+      ciudad:   geo.ciudad,
+      region:   geo.region,
+      pais:     geo.pais,
+      latitud:  geo.latitud  !== null ? parseFloat(geo.latitud)  : null,
+      longitud: geo.longitud !== null ? parseFloat(geo.longitud) : null
+    };
+    console.log("[supabase] payload:", JSON.stringify(payload));
+    const res = await fetch(SUPABASE_URL, {
+      method: "POST",
+      headers: {
+        "apikey":        SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type":  "application/json",
+        "Prefer":        "return=representation"
+      },
+      body: JSON.stringify(payload)
     });
-    if (intentos <= 0) bloquearFormulario();
+    const txt = await res.text();
+    if (res.ok) console.log("[supabase] ✅ guardado:", txt);
+    else        console.warn("[supabase] ❌", res.status, txt);
+  } catch(e) {
+    console.error("[supabase] excepción:", e.message);
+  }
 }
 
-// ===============================
-// BLOQUEAR FORMULARIO
-// ===============================
-function bloquearFormulario() {
-    btnEnviar.disabled = true;
-    btnEnviar.style.opacity = "0.4";
-    btnEnviar.style.cursor = "not-allowed";
-    campoNombre.disabled = true;
-    campoMensaje.disabled = true;
-    statusMsg.textContent = "Límite de mensajes alcanzado";
-    mostrarNotificacion("Bloqueado", "No quedan intentos disponibles");
-}
+// ── Init ─────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  let intentos = getIntentos();
+  renderDots(intentos);
 
-// ===============================
-// MOSTRAR NOTIFICACIÓN
-// ===============================
-function mostrarNotificacion(titulo, mensaje) {
-    notifTitle.textContent = titulo;
-    notifBody.textContent = mensaje;
-    notif.classList.add("show");
-    setTimeout(() => notif.classList.remove("show"), 3000);
-}
+  const sendBtn   = document.getElementById("sendBtn");
+  const fieldName = document.getElementById("fieldName");
+  const fieldMsg  = document.getElementById("fieldMsg");
 
-// ===============================
-// OBTENER UBICACIÓN DESDE BACKEND
-// ===============================
+  if (!sendBtn) return;
+  if (intentos <= 0) {
+    sendBtn.disabled = true;
+    setStatus("🚫 Sin intentos restantes.", "#ef4444");
+  }
 
-async function obtenerDatosRed() {
-    try {
-        const d = await fetch("/geo").then(r => r.json());
-        console.log("GEO:", d);
-        return {
-            ip:      d.ip       || "no disponible",
-            latitud: d.latitud  || null,
-            longitud: d.longitud || null
-        };
-    } catch (e) {
-        console.warn("Error:", e);
-        return { ip: "no disponible", latitud: null, longitud: null };
-    }
-}
+  sendBtn.addEventListener("click", async () => {
+    const nombre  = fieldName?.value.trim() || "";
+    const mensaje = fieldMsg?.value.trim()  || "";
 
-// ===============================
-// BOTÓN
-// ===============================
-btnEnviar.addEventListener("click", async () => {
+    if (!nombre)  { setStatus("⚠ Por favor escribe tu nombre.", "#f97316"); return; }
+    if (!mensaje) { setStatus("⚠ El mensaje no puede estar vacío.", "#f97316"); return; }
 
-    if (sinIntentos()) { bloquearFormulario(); return; }
-
-    const nombre  = campoNombre.value.trim();
-    const mensaje = campoMensaje.value.trim();
-
-    if (nombre === "" || mensaje === "") {
-        statusMsg.textContent = "Completa los campos";
-        mostrarNotificacion("Error", "Faltan datos");
-        return;
+    intentos = getIntentos();
+    if (intentos <= 0) {
+      sendBtn.disabled = true;
+      setStatus("🚫 Sin intentos restantes.", "#ef4444");
+      return;
     }
 
-    statusMsg.textContent = "Obteniendo ubicación...";
-    btnEnviar.disabled = true;
-
-    const red = await obtenerDatosRed();
-
-    console.log("DATOS FINALES:", red);
+    sendBtn.disabled = true;
+    setStatus("📡 Obteniendo ubicación…", "#60a5fa");
 
     try {
-        const respuesta = await fetch("/enviar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                nombre,
-                mensaje,
-                ip:      red.ip,
-                latitud: red.latitud,
-                longitud: red.longitud
-            })
-        });
+      const geo = await obtenerGeo();
+      console.log("[contacto] geo FINAL →", JSON.stringify(geo));
 
-        const data = await respuesta.json();
+      setStatus("📨 Enviando mensaje…", "#60a5fa");
 
-        if (data.ok) {
-            reducirIntento();
-            actualizarIntentos();
-            statusMsg.textContent = "Mensaje enviado";
-            mostrarNotificacion(nombre, "Mensaje enviado correctamente");
-            campoNombre.value = "";
-            campoMensaje.value = "";
+      // Mandar correo + guardar Supabase en paralelo
+      const [resp] = await Promise.all([
+        fetch("/enviar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre, mensaje,
+            ip:        geo.ip,
+            latitud:   geo.latitud,   // string "−1.872530"
+            longitud:  geo.longitud,  // string "−79.987807"
+            fuenteGeo: geo.fuenteGeo,
+            ciudad:    geo.ciudad,
+            region:    geo.region,
+            pais:      geo.pais
+          })
+        }),
+        guardarSupabase(geo)
+      ]);
+
+      const result = await resp.json();
+
+      if (result.ok) {
+        intentos--;
+        setIntentos(intentos);
+        renderDots(intentos);
+        setStatus("✅ Mensaje enviado.", "#4ade80");
+        showNotif(nombre, mensaje.length > 40 ? mensaje.slice(0, 40) + "…" : mensaje);
+        if (fieldName) fieldName.value = "";
+        if (fieldMsg)  fieldMsg.value  = "";
+        if (intentos <= 0) {
+          sendBtn.disabled = true;
+          setStatus("🚫 Sin intentos restantes.", "#ef4444");
         } else {
-            statusMsg.textContent = data.mensaje;
-            mostrarNotificacion("Error", data.mensaje);
+          sendBtn.disabled = false;
         }
-
-    } catch (error) {
-        console.log("ERROR:", error);
-        statusMsg.textContent = "Error del servidor";
-        mostrarNotificacion("Servidor", "No se pudo enviar");
-    } finally {
-        if (!sinIntentos()) btnEnviar.disabled = false;
+      } else {
+        setStatus("❌ Error al enviar. Intenta de nuevo.", "#ef4444");
+        sendBtn.disabled = false;
+      }
+    } catch (err) {
+      console.error("[contacto] Error:", err);
+      setStatus("❌ Error de conexión.", "#ef4444");
+      sendBtn.disabled = false;
     }
-
+  });
 });
-
-// ===============================
-// INICIO
-// ===============================
-actualizarIntentos();

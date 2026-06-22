@@ -137,16 +137,10 @@
 
     <div class="scene" id="scene">
 
-        <!-- ── CAPA DE VOLTEO 3D ── -->
-        <div class="flip-layer" id="flipLayer">
-        <div class="flip-face flip-front-face" id="flipFront"></div>
-        <div class="flip-face flip-back-face"  id="flipBack"></div>
-        </div>
-
         <!-- ══════════════════════════════════════
             SPREAD 0 — Portada
         ══════════════════════════════════════ -->
-        <div class="spread visible" data-page="0">
+        <div class="spread" data-page="0">
 
         <div class="page-left">
             <img src="img/HistoriaR/logo_construccion.webp" alt="Unidad Educativa Olmedo">
@@ -381,6 +375,10 @@
         </div>
     
         <div class="fb-track-wrapper" id="fbWrapper">
+             <button class="fb-side-btn" id="fbPrev">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            
             <div class="fb-track" id="fbTrack">
     
                 <!-- TARJETA 1 -->
@@ -576,23 +574,16 @@
                 </div>
     
             </div>
-        </div>
-    
-        <!-- Controles -->
-        <div class="fb-controls">
-            <button class="fb-ctrl-btn" id="fbPrev" aria-label="Anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div class="fb-dots" id="fbDots"></div>
-            <button class="fb-ctrl-btn" id="fbNext" aria-label="Siguiente">
+            <button class="fb-side-btn" id="fbNext">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
         </div>
     
+        <!-- Controles -->
+        <div class="fb-dots" id="fbDots"></div>
+    
     </section>
 
-
-    <script src="scripts/script_historiaR.js"></script>  
 
     
     <footer class="footer">
@@ -643,5 +634,6 @@
         </div>
 
     </footer>
+    <script src="scripts/script_historiaR.js"></script>  
 </body>
 </html>
